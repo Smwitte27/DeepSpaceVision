@@ -5,7 +5,8 @@ import socket
 import pickle
 import sys
 import struct
-from matplotlib import pyplot as plt 
+from matplotlib import pyplot as plt
+
 
 def recvall(sock, n):
     # Helper function to recv n bytes or return None if EOF is hit
@@ -17,11 +18,12 @@ def recvall(sock, n):
         data += packet
     return data
 
+
 print(f'RoboRio Simulator')
 
 imageFinal = None
 
-Host = '127.0.0.1' # CHANGE THIS to roboRio Network Ip address
+Host = '127.0.0.1'  # CHANGE THIS to roboRio Network Ip address
 Port = 5804
 
 # try:
@@ -30,7 +32,8 @@ Port = 5804
 #     print (f'Couldnt connect with the socket-server: \n terminating program')
 #     sys.exit(1)
 
-recvSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) # Tcp Connection
+recvSocket = socket.socket(
+    socket.AF_INET, socket.SOCK_STREAM)  # Tcp Connection
 
 recvSocket.bind((Host, Port))
 recvSocket.listen(1)
@@ -38,17 +41,17 @@ conn, addr = recvSocket.accept()
 print(f'Connection address: {addr}')
 
 while True:
-    data = conn.recv(4) # buffer size is 1024 bytes
+    data = conn.recv(4)  # buffer size is 1024 bytes
     #print (f'received message:, {data}')
-    if data: 
+    if data:
         message = struct.unpack('!i', data)
         messageId = message[0]
-        #print(f'{messageId}')
-        
-        if messageId == 1:           
+        # print(f'{messageId}')
+
+        if messageId == 1:
             data = conn.recv(16)
-            messageType1 = struct.unpack('dd', data) 
-            
+            messageType1 = struct.unpack('dd', data)
+
             targetAngle = messageType1[0]
             targetDistance = messageType1[1]
 
@@ -67,10 +70,11 @@ while True:
             # imageData = np.fromstring(imageDataRecv, np.uint8)
             # imageBGR = cv2.imdecode(imageData, flags=cv2.IMREAD_COLOR)
             # imageX = cv2.cvtColor(imageBGR, cv2.COLOR_BGR2RGB)
-            imageX = pickle.loads(imageDataRecv, fix_imports=True, encoding="bytes")
+            imageX = pickle.loads(
+                imageDataRecv, fix_imports=True, encoding="bytes")
             imageFinal = cv2.imdecode(imageX, cv2.IMREAD_COLOR)
             #cv2.imwrite('example.jpg', imageY)
 
     if imageFinal is not None:
-        cv2.imshow('Contour Processed Image',imageFinal)
+        cv2.imshow('Contour Processed Image', imageFinal)
         cv2.waitKey(10)
